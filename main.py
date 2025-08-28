@@ -21,7 +21,10 @@ def reply_keyboard():
 
 def inline_keyboard(message):
     keyboard = telebot.types.InlineKeyboardMarkup()
-    keyboard.row(telebot.types.InlineKeyboardButton('کانال 1', url=f'https://t.me/{CHANNEL_LINK}'), telebot.types.InlineKeyboardButton('کانال 2', url=f'https://t.me/{CHANNEL_LINK_2}'))
+    keyboard.row(
+        telebot.types.InlineKeyboardButton('کانال 1', url=f'https://t.me/{CHANNEL_LINK}'),
+        telebot.types.InlineKeyboardButton('کانال 2', url=f'https://t.me/{CHANNEL_LINK_2}')
+    )
     keyboard.row(telebot.types.InlineKeyboardButton('تایید عضویت✅', callback_data='check_member'))
     bot.send_message(message.chat.id, 'برای دریافت خدمات از ربات، باید در کانال های زیر عضو شوید', reply_markup=keyboard)
 
@@ -44,8 +47,11 @@ def handle_callback(call):
     if check(CHANNEL_ID) and check(CHANNEL_ID_2):
         bot.send_message(call.message.chat.id, '✅ عضویت شما تایید شد')
         bot.delete_message(call.message.chat.id, call.message.message_id)
-        bot.send_message(call.message.chat.id, f'سلام به ربات استعلام قیمت ساخته شده توسط ArM خوش آمدید 👋🌹\nقیمت ها هر نیم ساعت یکبار به این کانال ارسال خواهند شد\nChannel: @{CHANNEL_LINK}', 
-                         reply_markup=reply_keyboard())
+        bot.send_message(
+            call.message.chat.id,
+            f'سلام به ربات استعلام قیمت ساخته شده توسط ArM خوش آمدید 👋🌹\nقیمت ها هر نیم ساعت یکبار به این کانال ارسال خواهند شد\nChannel: @{CHANNEL_LINK}',
+            reply_markup=reply_keyboard()
+        )
     else:
         bot.send_message(call.message.chat.id, '❌ هنوز عضو کانال‌ها نشده‌اید.')
         bot.delete_message(call.message.chat.id, call.message.message_id)
@@ -54,13 +60,15 @@ def handle_callback(call):
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     if is_member(message):
-        bot.send_message(message.chat.id, f'سلام به ربات استعلام قیمت ساخته شده توسط ArM خوش آمدید 👋🌹\nقیمت ها هر نیم ساعت یکبار به این کانال ارسال خواهند شد\nChannel: @{CHANNEL_LINK}', 
-                         reply_markup=reply_keyboard())
-        
+        bot.send_message(
+            message.chat.id,
+            f'سلام به ربات استعلام قیمت ساخته شده توسط ArM خوش آمدید 👋🌹\nقیمت ها هر نیم ساعت یکبار به این کانال ارسال خواهند شد\nChannel: @{CHANNEL_LINK}',
+            reply_markup=reply_keyboard()
+        )
+
 @bot.message_handler(func=lambda msg: msg.text == 'ارتباط با پشتیبانی')
 def support(message):
     bot.send_message(message.chat.id, f"برای ارتباط با پشتیبانی به آیدی زیر پیام دهید\nSupport ID : @{SUPPORT_ID}")
-    
 
 def price_currency():
     try:
@@ -72,7 +80,7 @@ def price_currency():
         result_list = []
         text = ''
         for item in attrs_list:
-            tr = soup.find('tr', attrs={"data-market-row":item})
+            tr = soup.find('tr', attrs={"data-market-row": item})
             result = tr.find('td', class_='nf').text
             result_list.append(result)
         for i in range(len(attrs_list)):
@@ -80,6 +88,7 @@ def price_currency():
         return text
     except Exception as e:
         print(f'Error connecting to the website\n{e}')
+        return '❌ خطا در دریافت قیمت ارز'
 
 def price_gold():
     try:
@@ -91,7 +100,7 @@ def price_gold():
         result_list = []
         text = ''
         for item in attrs_list:
-            tr = soup.find('tr', attrs={'data-market-row':item})
+            tr = soup.find('tr', attrs={'data-market-row': item})
             result = tr.find('td', class_='nf').text
             result_list.append(result)
         for i in range(len(attrs_list)):
@@ -99,24 +108,25 @@ def price_gold():
         return text
     except Exception as e:
         print(f'Error connecting to the website\n{e}')
+        return '❌ خطا در دریافت قیمت طلا'
 
 def price_crypto():
     try:
-        url = 'https://api.nobitex.ir/market/stats'
+        url = 'https://apiv2.nobitex.ir/market/stats'
         headers = {
             "Authorization": f"Token {NOBITEX_TOKEN}",
             "content-type": "application/json"
         }
-        data = {"dstCurrency":"rls"}
+        data = {"dstCurrency": "rls"}
         text = ''
         crypto_dict = {
-            'USDT' : 'usdt-rls',
-            'BTC' : 'btc-rls',
-            'ETH' : 'eth-rls',
-            'LTC' : 'ltc-rls',
-            'DOGE' : 'doge-rls',
-            'TRON' : 'trx-rls',
-            'TON' : 'ton-rls'
+            'USDT': 'usdt-rls',
+            'BTC': 'btc-rls',
+            'ETH': 'eth-rls',
+            'LTC': 'ltc-rls',
+            'DOGE': 'doge-rls',
+            'TRON': 'trx-rls',
+            'TON': 'ton-rls'
         }
         price = requests.post(url, headers=headers, json=data).json()
         for item in crypto_dict:
@@ -125,20 +135,8 @@ def price_crypto():
         return text
     except Exception as e:
         print(f'Error connecting to the website\n{e}')
-        
-def main():
-    my_message = '<b><i>-------⬇️ Currency ⬇️--------</i></b>\n\n'
-    currency = price_currency()
-    my_message += currency
-    my_message += '\n<b><i>-------⬇️ Gold ⬇️--------</i></b>\n\n'
-    gold = price_gold()
-    my_message += gold
-    my_message += '\n<b><i>-------⬇️ Crypto ⬇️--------</i></b>\n\n'
-    crypto = price_crypto()
-    my_message += crypto
-    bot.send_message(CHANNEL_ID, my_message, parse_mode='HTML')
+        return '❌ خطا در دریافت قیمت کریپتو'
 
+# فقط ربات اجرا می‌شود
 if __name__ == '__main__':
-    main()
-    
-bot.infinity_polling()
+    bot.infinity_polling()
