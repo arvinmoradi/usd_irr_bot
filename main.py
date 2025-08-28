@@ -75,16 +75,17 @@ def price_currency():
         url = requests.get('https://www.tgju.org/currency')
         soup = BeautifulSoup(url.content, 'html.parser')
         attrs_list = ["price_dollar_rl", "price_eur", "price_gbp", "price_try", "price_iqd", "price_aed"]
-        name_list = ['USD', 'EUR', 'POUND', 'TRY', 'IQD', 'AED']
+        name_list = ['USD', 'EUR', 'GBP', 'TRY', 'IQD', 'AED']
         flag_list = ['🇺🇸', '🇪🇺', '🇬🇧', '🇹🇷', '🇮🇶', '🇦🇪']
         result_list = []
         text = ''
         for item in attrs_list:
             tr = soup.find('tr', attrs={"data-market-row": item})
             result = tr.find('td', class_='nf').text
+            result = result.replace(',', '')
             result_list.append(result)
         for i in range(len(attrs_list)):
-            text += f"<b>{name_list[i]}{flag_list[i]} = {result_list[i]} IRR</b>\n\n"
+            text += f"<b>{name_list[i]}{flag_list[i]} = {(int(result_list[i]) // 10):,} IRT</b>\n\n"
         return text
     except Exception as e:
         print(f'Error connecting to the website\n{e}')
@@ -102,9 +103,10 @@ def price_gold():
         for item in attrs_list:
             tr = soup.find('tr', attrs={'data-market-row': item})
             result = tr.find('td', class_='nf').text
-            result_list.append(result)
+            result = result.replace(',', '')
+            result_list.append({result})
         for i in range(len(attrs_list)):
-            text += f"<b>{name_list[i]}{emoji_list[i]} = {result_list[i]} IRR</b>\n\n"
+            text += f"<b>{name_list[i]}{emoji_list[i]} = {(int(result_list[i]) // 10):,} IRT</b>\n\n"
         return text
     except Exception as e:
         print(f'Error connecting to the website\n{e}')
@@ -128,10 +130,10 @@ def price_crypto():
             'TRON': 'trx-rls',
             'TON': 'ton-rls'
         }
-        price = requests.post(url, headers=headers, json=data).json()
+        price = requests.get(url, headers=headers, data=data).json()
         for item in crypto_dict:
-            items = '{:,}'.format(int(price['stats'][crypto_dict[item]]['latest']))
-            text += f"<b>{item} = {items} IRR</b>\n\n"
+            items = int(price['stats'][crypto_dict[item]]['latest']) // 10
+            text += f"<b>{item} = {items:,} IRT</b>\n\n"
         return text
     except Exception as e:
         print(f'Error connecting to the website\n{e}')
