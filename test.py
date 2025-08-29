@@ -1,75 +1,16 @@
 import os
-import requests
 import telebot
+import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import jdatetime
 
 load_dotenv()
-API_TOKEN = os.getenv('API_TOKEN')
+API_TOKEN_TEST = os.getenv('API_TOKEN_TEST')
+CHANNEL_ID_TEST = os.getenv('CHANNEL_ID_TEST')
 NOBITEX_TOKEN = os.getenv('NOBITEX_TOKEN')
-CHANNEL_ID = os.getenv('CHANNEL_ID')
-CHANNEL_ID_2 = os.getenv('CHANNEL_ID_2')
-CHANNEL_LINK = 'price_currency_and_crypto'
-CHANNEL_LINK_2 = 'ArM_VPN_VIP'
-SUPPORT_ID = 'ArvinMoradi'
-bot = telebot.TeleBot(API_TOKEN)
 
-def reply_keyboard():
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(telebot.types.KeyboardButton('ارتباط با پشتیبانی'))
-    return markup
-
-def inline_keyboard(message):
-    keyboard = telebot.types.InlineKeyboardMarkup()
-    keyboard.row(
-        telebot.types.InlineKeyboardButton('کانال 1', url=f'https://t.me/{CHANNEL_LINK}'),
-        telebot.types.InlineKeyboardButton('کانال 2', url=f'https://t.me/{CHANNEL_LINK_2}')
-    )
-    keyboard.row(telebot.types.InlineKeyboardButton('تایید عضویت✅', callback_data='check_member'))
-    bot.send_message(message.chat.id, 'برای دریافت خدمات از ربات، باید در کانال های زیر عضو شوید', reply_markup=keyboard)
-
-def is_member(message):
-    def check(channel_id):
-        user_info = bot.get_chat_member(channel_id, message.from_user.id)
-        return user_info.status in ['administrator', 'creator', 'member']
-    
-    if check(CHANNEL_ID) and check(CHANNEL_ID_2):
-        return True
-    inline_keyboard(message)
-    return False
-
-@bot.callback_query_handler(func=lambda call: call.data == 'check_member')
-def handle_callback(call):
-    def check(channel_id):
-        user_info = bot.get_chat_member(channel_id, call.from_user.id)
-        return user_info.status in ['administrator', 'creator', 'member']
-    
-    if check(CHANNEL_ID) and check(CHANNEL_ID_2):
-        bot.send_message(call.message.chat.id, '✅ عضویت شما تایید شد')
-        bot.delete_message(call.message.chat.id, call.message.message_id)
-        bot.send_message(
-            call.message.chat.id,
-            f'سلام به ربات استعلام قیمت ساخته شده توسط ArM خوش آمدید 👋🌹\nقیمت ها هر نیم ساعت یکبار به این کانال ارسال خواهند شد\nChannel: @{CHANNEL_LINK}',
-            reply_markup=reply_keyboard()
-        )
-    else:
-        bot.send_message(call.message.chat.id, '❌ هنوز عضو کانال‌ها نشده‌اید.')
-        bot.delete_message(call.message.chat.id, call.message.message_id)
-        inline_keyboard(call.message)
-
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    if is_member(message):
-        bot.send_message(
-            message.chat.id,
-            f'سلام به ربات استعلام قیمت ساخته شده توسط ArM خوش آمدید 👋🌹\nقیمت ها هر نیم ساعت یکبار به این کانال ارسال خواهند شد\nChannel: @{CHANNEL_LINK}',
-            reply_markup=reply_keyboard()
-        )
-
-@bot.message_handler(func=lambda msg: msg.text == 'ارتباط با پشتیبانی')
-def support(message):
-    bot.send_message(message.chat.id, f"برای ارتباط با پشتیبانی به آیدی زیر پیام دهید\nSupport ID : @{SUPPORT_ID}")
+bot = telebot.TeleBot(API_TOKEN_TEST)
 
 def date_time():
     weekdays_fa = {
@@ -86,6 +27,7 @@ def date_time():
     date = now.strftime('%Y %m %d')
     text = f"<b>روز : {weekdays_fa[weekdays_en]}</b>\n<b>تاریخ : {date.replace(' ', '/')}</b>\n"
     return text
+
 
 def price_currency():
     try:
@@ -165,7 +107,15 @@ def price_gold():
     except Exception as e:
         print(f'Error connecting to the website\n{e}')
         return '❌ خطا در دریافت قیمت طلا'
+     
+my_message = date_time()
+my_message += '\n<b>-------⬇️ نرخ ارز ⬇️--------</b>\n\n'
+my_message += price_currency()
+my_message += '\n<b>-------⬇️ قیمت ارزهای دیجیتال ⬇️--------</b>\n\n'
+my_message += price_crypto()
+my_message += '\n<b>-------⬇️ قیمت طلا ⬇️--------</b>\n\n'
+my_message += price_gold()
 
-# فقط ربات اجرا می‌شود
-if __name__ == '__main__':
-    bot.infinity_polling()
+bot.send_message(CHANNEL_ID_TEST, my_message, parse_mode='HTML')
+
+bot.infinity_polling()
