@@ -156,8 +156,6 @@ set_cronjob() {
     echo -e "${MAGNETA}===========================${NC}"
     read -p "Choice: " opt
 
-    crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
-
     case $opt in
         1) schedule="*/30 * * * *" ;;
         2) schedule="0 */1 * * *" ;;
@@ -170,7 +168,9 @@ set_cronjob() {
     esac
 
     cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
-    (crontab -l 2>/dev/null; grep -v -F "$cmd"; echo "$cmd") | crontab -
+    if [ -n "$cmd" ]; then
+        (crontab -l 2>/dev/null; grep -v -F "$cmd"; echo "$cmd") | crontab -
+    fi
     echo "✅ Cronjob Add: $cmd"
     read -p "press key to back main menu..."
 }
