@@ -62,7 +62,7 @@ install_bot() {
 
     echo "⚙️ Creating systemd service..."
     SERVICE_FILE="/etc/systemd/system/arm_currency_bot.service"
-    sudo tee $SERVICE_FILE > /dev/null <<EOF
+    sudo tee $SERVICE_FILE > /dev/null <<-EOF
     [Unit]
     Description=Telegram Currency Bot
     After=network.target
