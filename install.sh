@@ -60,7 +60,7 @@ install_bot() {
 
     if [ -d "venv" ]; then
         echo "❌ Directory $BOT_DIR already exists and is not empty"
-        read -p "Do you want to Uninstall ?(y/n): " ans
+        read -p "Do you want to Uninstall? (y/n): " ans
 
         if [[ $ans == 'y' || $ans == 'Y' ]]; then
             uninstall_bot
@@ -183,10 +183,12 @@ uninstall_bot() {
         echo -e "🗑 ${RED}Uninstalling bot...${NC}"
         read -p "Do you want to uninstall (y/n) ? " ans
         if [[ "$ans" == "y" || "$ans" == 'Y' ]]; then
-            sudo systemctl stop $SERVICE_NAME
-            sudo systemctl disable $SERVICE_NAME
-            sudo rm -f /etc/systemd/system/$SERVICE_NAME
-            sudo systemctl daemon-reload
+            if systemctl list-units --full -all | grep -Fq "$SERVICE_NAME"; then
+                sudo systemctl stop $SERVICE_NAME
+                sudo systemctl disable $SERVICE_NAME
+                sudo rm -f /etc/systemd/system/$SERVICE_NAME
+                sudo systemctl daemon-reload
+            fi
             rm -rf $BOT_DIR
             crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
             echo -e "✅ ${GREEN}Bot completely uninstalled!${NC}"
