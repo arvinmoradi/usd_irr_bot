@@ -5,63 +5,78 @@ set -e
 #-------------- DIR ----------
 BOT_DIR=$HOME/usd_irr_arm
 REPO_DIR="https://github.com/arvinmoradi/usd_irr_bot.git"
-mkdir -p $BOT_DIR
+mkdir -p "$BOT_DIR"
 
 #------ COLORS -------
 GREEN='\e[32m'
-RED='\e[31m\'
+RED='\e[31m'
 YELLOW='\e[33m'
 BLUE='\e[34m'
 PURPLE='\e[35m'
 TURQUOISE='\e[36m'
 WHITE='\e[37m'
+MAGNETA='\e[35m'
 NC='\e[30m'
 
+#-------------- O.VARIABLES ----------
+SERVICE_NAME="arm_currency_bot.service"
+VERSION="v0.1.0"
+
 #---------------FUNCTIONS--------------
+check_status() {
+    if [ -d "$BOT_DIR" ] && [ -d "$BOT_DIR/venv" ] && [ -d "$BOT_DIR/.git"]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 show_menu() {
     clear
-    echo -e "${GREEN}===========================${NC}"
+    echo -e "${MAGNETA}===========================${NC}"
     echo -e "${GREEN}Manage Telegram Bot For USD TO IRT${NC}"
     echo -e "${PURPLE}Created By ${BLUE}ArM${NC}"
     echo -e "${BLUE}Telegram: ${YELLOW}@ArvinMoradi${NC}"
-    echo -e "${GREEN}===========================${NC}"
+    echo -e "${TURQUOISE}Status: ${status:-${RED}NOT INSTALLED${NC}}"
+    echo -e "Version: $VERSION"
+    echo -e "${MAGNETA}===========================${NC}"
     echo -e "${YELLOW}1) Install"
-    echo -e "${YELLOW}2) Update"
-    echo -e "${YELLOW}3) Set Cronjob"
-    echo -e "${YELLOW}4) Uninstall"
-    echo -e "${YELLOW}5) Exit"
-    echo -e "${GREEN}==========================="
-    read -p "Choose:" choice
+    echo -e "2) Update"
+    echo -e "3) Set Cronjob"
+    echo -e "4) Uninstall"
+    echo -e "5) Exit"
+    echo -e "${MAGNETA}===========================${NC}"
+    read -p "Choose: " choice
 }
 
 install_bot() {
-    echo -e "🚀 ${RED}Installing bot...${NC}"
-    cd $BOT_DIR
-
-    echo 'Updating...'
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
 
     if [ ! -d '.git' ]; then
-        git clone $REPO_DIR .
+        git clone "$REPO_DIR" .
+        echo "🟢 ${BLUE}Installing...${NC}"
     else
-        echo "✅ Bot is Installed"
+        echo "✅ ${GREEN}Bot is Installed${NC}"
+        read -p 'press key to back main menu: '
+        clear
+        show_menu
         return
     fi
 
     if [ ! -d 'venv' ]; then
-        echo 'Create Virtual Environment...'
+        echo "${BLUE}Create Virtual Environment...${NC}"
         python3 -m venv venv
     fi
 
     source venv/bin/activate
 
-    echo 'Installing dependency...'
+    echo "${BLUE}Installing dependency...${NC}"
     pip install --upgrade pip
     pip install -r requirements.txt
 
-    echo "⚙️ Creating systemd service..."
-    SERVICE_FILE="/etc/systemd/system/arm_currency_bot.service"
+    echo "⚙️ ${BLUE}Creating systemd service...${NC}"
+    SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}"
 sudo tee $SERVICE_FILE > /dev/null <<EOF
 [Unit]
 Description=Telegram Currency Bot
@@ -85,57 +100,97 @@ EOF
     sudo sed -i 's/^[[:space:]]*//' $SERVICE_FILE
     echo "🔹 Enabling and starting service..."
     sudo systemctl daemon-reload
-    sudo systemctl enable arm_currency_bot.service
-    sudo systemctl start arm_currency_bot.service
+    sudo systemctl enable ${SERVICE_NAME}
+    sudo systemctl start ${SERVICE_NAME}
 
-    echo "✅ Bot installed and service created successfully!"
+    echo "✅ ${GREEN}Bot installed and service created successfully!${NC}"
     deactivate
+    status="${GREEN}INSTALLED${NC}"
     read -p 'press key to back main menu: '
 }
 
 update_bot() {
-    echo -e "🔄 Updating bot..."
+    if check_status; then
+        echo -e "🚀 ${BLUE}Installing bot...${NC}"
+        cd "$BOT_DIR"
+        source venv/bin/activate
+        git pull origin main
+        pip install --upgrade -r requirements.txt
+        deactivate
+        sudo systemctl restart $SERVICE_NAME
+        echo "✅ Update completed!"
+    else
+        read -p "❌ Bot not installed. Do you want to install it now? (y/n): " ans
+        if [[ "$ans" == "y" || "$ans" == 'Y' ]]; then
+            install_bot
+        fi
+    fi
     read -p 'press key to back main menu: '
 }
 
 uninstall_bot() {
-    echo "🗑 Uninstalling bot..."
+    if check_status; then
+        echo "🗑 ${BLUE}Uninstalling bot...${NC}"
+        sudo systemctl stop $SERVICE_NAME
+        sudo systemctl disable $SERVICE_NAME
+        sudo rm -f /etc/systemd/system/$SERVICE_NAME
+        sudo systemctl daemon-reload
+        rm -rf $BOT_DIR
+        crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
+        echo "✅ ${GREEN}Bot completely uninstalled!${NC}"
+    else
+        echo "❌ ${RED}Nothing to uninstall${NC}"
+    fi
+
+    status="${RED}NOT INSTALLED${NC}"
+
     read -p 'press key to back main menu: '
 }
 
 set_cronjob() {
-    clear
-    echo "==========================="
-    echo "Add Cronjob"
-    echo "==========================="
-    echo "1) 30 Min"
-    echo "2) 1 Hour"
-    echo "3) 2 Hour"
-    echo "4) 3 Hour"
-    echo "5) 6 Hour"
-    echo "6) 12 Hour"
-    echo "==========================="
-    read -p "Choice: " opt
+    if ! check_status; then
+        read -p "❌ Bot not installed. Do you want to install it now? (y/n): " ans
+        if [[ $ans == "y" || $ans == "Y" ]]; then
+            install_bot
+        else
+            return
+        fi
+    fi
 
-    crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
+    while true; do
+        clear
+        echo -e "${MAGNETA}===========================${NC}"
+        echo -e "${GREEN}Add Cronjob${NC}"
+        echo -e "${MAGNETA}===========================${NC}"
+        echo -e "${YELLOW}1) 30 Min"
+        echo -e "2) 1 Hour"
+        echo -e "3) 2 Hour"
+        echo -e "4) 3 Hour"
+        echo -e "5) 6 Hour"
+        echo -e "6) 12 Hour"
+        echo -e "0) Back to main menu"
+        echo -e "${MAGNETA}===========================${NC}"
+        read -p "Choice: " opt
 
-    case $opt in
-        1) schedule="*/30 * * * *" ;;
-        2) schedule="0 */1 * * *" ;;
-        3) schedule="0 */2 * * *" ;;
-        4) schedule="0 */3 * * *" ;;
-        5) schedule="0 */6 * * *" ;;
-        6) schedule="0 */12 * * *" ;;
-        *) echo "Invalid Choice..."; sleep 2; return ;;
-    esac
+        crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
 
-    cmd="$schedule /root/mybot/currency/venv/bin/python3 /root/mybot/currency/sender.py >> /root/mybot/currency/cron.log 2>&1"
+        case $opt in
+            1) schedule="*/30 * * * *" ;;
+            2) schedule="0 */1 * * *" ;;
+            3) schedule="0 */2 * * *" ;;
+            4) schedule="0 */3 * * *" ;;
+            5) schedule="0 */6 * * *" ;;
+            6) schedule="0 */12 * * *" ;;
+            0) return ;; #main menu
+            *) echo "Invalid Choice..."; sleep 2; continue ;;
+        esac
 
-    (crontab -l 2>/dev/null; grep -v -F "$cmd"; echo "$cmd") | crontab -
-
-    echo "✅ Cronjob Add: $cmd"
-    echo
-    read -p "press key to back main menu..."
+        cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
+        (crontab -l 2>/dev/null; grep -v -F "$cmd"; echo "$cmd") | crontab -
+        echo "✅ Cronjob Add: $cmd"
+        echo
+        read -p "press key to back main menu..."
+    done
 }
 
 #-----------RUN-------------
