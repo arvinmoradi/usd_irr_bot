@@ -55,7 +55,6 @@ show_menu() {
 install_bot() {
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
-    cd $BOT_DIR
 
     if [ -d "$BOT_DIR" ] && [ ! -d "$BOT_DIR/venv" ]; then
         echo -e "❌ ${RED}Directory $BOT_DIR already exists. If you want to reinstall, please uninstall first.${NC}"
@@ -135,25 +134,6 @@ update_bot() {
     read -p 'press key to back main menu: '
 }
 
-uninstall_bot() {
-    if check_status; then
-        echo "🗑 ${BLUE}Uninstalling bot...${NC}"
-        sudo systemctl stop $SERVICE_NAME
-        sudo systemctl disable $SERVICE_NAME
-        sudo rm -f /etc/systemd/system/$SERVICE_NAME
-        sudo systemctl daemon-reload
-        rm -rf $BOT_DIR
-        crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
-        echo -e "✅ ${GREEN}Bot completely uninstalled!${NC}"
-    else
-        echo -e "❌ ${RED}Nothing to uninstall${NC}"
-    fi
-
-    status="${RED}NOT INSTALLED${NC}"
-
-    read -p 'press key to back main menu: '
-}
-
 set_cronjob() {
     if ! check_status; then
         read -p "❌ Bot not installed. Do you want to install it now? (y/n): " ans
@@ -197,6 +177,25 @@ set_cronjob() {
         echo "✅ Cronjob Add: $cmd"
         read -p "press key to back main menu..."
     done
+}
+
+uninstall_bot() {
+    if check_status; then
+        echo "🗑 ${BLUE}Uninstalling bot...${NC}"
+        sudo systemctl stop $SERVICE_NAME
+        sudo systemctl disable $SERVICE_NAME
+        sudo rm -f /etc/systemd/system/$SERVICE_NAME
+        sudo systemctl daemon-reload
+        rm -rf $BOT_DIR
+        crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
+        echo -e "✅ ${GREEN}Bot completely uninstalled!${NC}"
+    else
+        echo -e "❌ ${RED}Nothing to uninstall${NC}"
+    fi
+
+    status="${RED}NOT INSTALLED${NC}"
+
+    read -p 'press key to back main menu: '
 }
 
 #-----------RUN-------------
