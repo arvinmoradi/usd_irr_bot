@@ -3,7 +3,7 @@
 set -e
 
 #-------------- DIR ----------
-BOT_DIR=$HOME/usd_irr_arm
+BOT_DIR="$HOME/usd_irr_arm"
 REPO_DIR="https://github.com/arvinmoradi/usd_irr_bot.git"
 mkdir -p "$BOT_DIR"
 TEMP_DIR="${BOT_DIR}_temp"
