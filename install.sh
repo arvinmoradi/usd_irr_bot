@@ -54,6 +54,7 @@ show_menu() {
 install_bot() {
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
+    cd $BOT_DIR
 
     if [ -d ".git" ]; then
         echo "📦 Bot already exists, updating..."
