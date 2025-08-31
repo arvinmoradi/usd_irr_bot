@@ -24,7 +24,7 @@ VERSION="v0.1.0"
 
 #---------------FUNCTIONS--------------
 check_status() {
-    if [ -d "$BOT_DIR" ] && [ -d "$BOT_DIR/venv" ] && [ -d "$BOT_DIR/.git"]; then
+    if [ -d "$BOT_DIR" ] && [ -d "$BOT_DIR/venv" ] && [ -d "$BOT_DIR/.git" ]; then
         return 0
     else
         return 1
@@ -52,16 +52,17 @@ show_menu() {
 install_bot() {
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
+    
 
-    if [ ! -d '.git' ]; then
+
+    if [ -d ".git" ]; then
+        echo "📦 Bot already exists, updating..."
+        git reset --hard
+        git clean -fd
+        git pull origin main
+    else
         git clone "$REPO_DIR" .
         echo "🟢 ${BLUE}Installing...${NC}"
-    else
-        echo "✅ ${GREEN}Bot is Installed${NC}"
-        read -p 'press key to back main menu: '
-        clear
-        show_menu
-        return
     fi
 
     if [ ! -d 'venv' ]; then
