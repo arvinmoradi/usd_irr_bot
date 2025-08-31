@@ -8,7 +8,7 @@ REPO_DIR="https://github.com/arvinmoradi/usd_irr_bot.git"
 TEMP_DIR="${BOT_DIR}_temp"
 mkdir -p "$BOT_DIR"
 mkdir -p "$(dirname "$TEMP_DIR")"
-cd $BOT_DIR
+
 
 #------ COLORS -------
 GREEN='\e[32m'
@@ -53,7 +53,6 @@ show_menu() {
 }
 
 install_bot() {
-    cd "$HOME"
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
     cd $BOT_DIR
@@ -118,7 +117,6 @@ EOF
 }
 
 update_bot() {
-    cd "$HOME"
     if check_status; then
         echo -e "🚀 ${BLUE}Installing bot...${NC}"
         cd "$BOT_DIR"
@@ -138,7 +136,6 @@ update_bot() {
 }
 
 uninstall_bot() {
-    cd "$HOME"
     if check_status; then
         echo "🗑 ${BLUE}Uninstalling bot...${NC}"
         sudo systemctl stop $SERVICE_NAME
@@ -158,7 +155,6 @@ uninstall_bot() {
 }
 
 set_cronjob() {
-    cd "$HOME"
     if ! check_status; then
         read -p "❌ Bot not installed. Do you want to install it now? (y/n): " ans
         if [[ $ans == "y" || $ans == "Y" ]]; then
