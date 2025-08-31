@@ -57,20 +57,19 @@ install_bot() {
     sudo apt install -y python3 python3-venv python3-pip git
     cd $BOT_DIR
 
-    if [ -d ".git" ]; then
-        echo "📦 Bot already exists, updating..."
-        git reset --hard
-        git clean -fd
-        git pull origin main
-    else
-        echo "📦 Cloning bot into a temporary folder..."
-        rm -rf "$TEMP_DIR"
-        git clone "$REPO_DIR" "$TEMP_DIR" || { echo "❌ Clone failed"; rm -rf "$TEMP_DIR"; exit 1; }
-        cp -r "$TEMP_DIR"/* "$BOT_DIR"/ || { echo "❌ Copy failed"; rm -rf "$TEMP_DIR"; exit 1; }
-        rm -rf "$TEMP_DIR"
-        cd $BOT_DIR
+    if [ -d "$BOT_DIR" ] && [ ! -d "$BOT_DIR/venv" ]; then
+        echo -e "❌ ${RED}Directory $BOT_DIR already exists. If you want to reinstall, please uninstall first.${NC}"
+        read -p "Press enter to return to main menu...: "
+        return
+    fi
+
+    if [ ! -d "$BOT_DIR" ]; then
+        echo "📦 Cloning bot into $BOT_DIR..."
+        git clone "$REPO_DIR" "$BOT_DIR" || { echo "❌ Clone failed"; exit 1; }
         echo -e "🟢 ${BLUE}Installing...${NC}"
     fi
+
+    cd "$BOT_DIR"
 
     if [ ! -d 'venv' ]; then
         echo -e "${BLUE}Create Virtual Environment...${NC}"
