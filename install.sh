@@ -5,10 +5,6 @@ set -e
 #-------------- DIR ----------
 BOT_DIR="$HOME/usd_irr_arm"
 REPO_DIR="https://github.com/arvinmoradi/usd_irr_bot.git"
-TEMP_DIR="${BOT_DIR}_temp"
-mkdir -p "$BOT_DIR"
-mkdir -p "$(dirname "$TEMP_DIR")"
-
 
 #------ COLORS -------
 GREEN='\e[32m'
@@ -56,18 +52,13 @@ install_bot() {
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
 
+    mkdir -p "$BOT_DIR"
     cd "$BOT_DIR"
 
     if [ -d "venv" ]; then
         echo "❌ Directory $BOT_DIR already exists and is not empty"
-        read -p "Do you want to Uninstall? (y/n): " ans
-
-        if [[ $ans == 'y' || $ans == 'Y' ]]; then
-            uninstall_bot
-            return
-        else
-            return
-        fi
+        uninstall_bot
+        return
     else
         git clone "$REPO_DIR" "$BOT_DIR" || { echo "❌ Clone failed"; exit 1; }
         echo -e "🟢 ${BLUE}Installing...${NC}"
