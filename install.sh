@@ -62,24 +62,24 @@ install_bot() {
 
     echo "⚙️ Creating systemd service..."
     SERVICE_FILE="/etc/systemd/system/arm_currency_bot.service"
-    sudo tee $SERVICE_FILE > /dev/null <<EOF
-    [Unit]
-    Description=Telegram Currency Bot
-    After=network.target
+sudo tee $SERVICE_FILE > /dev/null <<EOF
+[Unit]
+Description=Telegram Currency Bot
+After=network.target
 
-    [Service]
-    User=root
-    WorkingDirectory=$BOT_DIR
-    ExecStart=$BOT_DIR/venv/bin/python3 $BOT_DIR/main.py
-    Restart=always
-    RestartSec=10
-    Environment=API_TOKEN=$API_TOKEN
-    Environment=NOBITEX_TOKEN=$NOBITEX_TOKEN
-    Environment=CHANNEL_ID=$CHANNEL_ID
-    Environment=CHANNEL_ID_2=$CHANNEL_ID_2
+[Service]
+User=root
+WorkingDirectory=$BOT_DIR
+ExecStart=$BOT_DIR/venv/bin/python3 $BOT_DIR/main.py
+Restart=always
+RestartSec=10
+Environment=API_TOKEN=$API_TOKEN
+Environment=NOBITEX_TOKEN=$NOBITEX_TOKEN
+Environment=CHANNEL_ID=$CHANNEL_ID
+Environment=CHANNEL_ID_2=$CHANNEL_ID_2
 
-    [Install]
-    WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
 EOF
 
     sudo sed -i 's/^[[:space:]]*//' $SERVICE_FILE
