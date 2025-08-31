@@ -27,7 +27,7 @@ VERSION="v0.1.0"
 
 #---------------FUNCTIONS--------------
 check_status() {
-    if [ -d "$BOT_DIR" ] && [ -d "$BOT_DIR/venv" ] && [ -d "$BOT_DIR/.git" ]; then
+    if [ -d "$BOT_DIR" ] && [ -d "$BOT_DIR/.git" ]; then
         return 0
     else
         return 1
@@ -56,10 +56,8 @@ install_bot() {
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
 
-    if [ -d "$BOT_DIR" ] && [ ! -d "$BOT_DIR/venv" ]; then
-        echo -e "❌ ${RED}Directory $BOT_DIR already exists. If you want to reinstall, please uninstall first.${NC}"
-        read -p "Press enter to return to main menu...: "
-        return
+    if [ -d "$BOT_DIR" ]; then
+        echo "📦 $BOT_DIR exists, using it for installation..."
     fi
 
     if [ ! -d "$BOT_DIR" ]; then
