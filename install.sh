@@ -166,7 +166,7 @@ set_cronjob() {
         5) schedule="0 */6 * * *" ;;
         6) schedule="0 */12 * * *" ;;
         0) return ;; #main menu
-        *) echo "Invalid Choice..."; sleep 2; continue ;;
+        *) echo "Invalid Choice..."; sleep 2 ;;
     esac
 
     cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
