@@ -58,6 +58,8 @@ install_bot() {
 
     if [ -d "$BOT_DIR" ]; then
         echo "📦 $BOT_DIR exists, using it for installation..."
+    else
+        git clone "$REPO_DIR" "$BOT_DIR" || { echo "❌ Clone failed"; exit 1; }
     fi
 
     if [ ! -d "$BOT_DIR" ]; then
