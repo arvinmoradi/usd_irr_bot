@@ -166,7 +166,7 @@ set_cronjob() {
             4) schedule="0 */3 * * *" ;;
             5) schedule="0 */6 * * *" ;;
             6) schedule="0 */12 * * *" ;;
-            0) return ;; #main menu
+            0) break ;; #main menu
             *) echo "Invalid Choice..."; sleep 2; continue ;;
         esac
 
@@ -174,7 +174,6 @@ set_cronjob() {
         (crontab -l 2>/dev/null; grep -v -F "$cmd"; echo "$cmd") | crontab -
         echo "✅ Cronjob Add: $cmd"
         read -p "press key to back main menu..."
-        return
     done
 }
 
