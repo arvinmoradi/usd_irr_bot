@@ -64,6 +64,7 @@ install_bot() {
 
         if [[ $ans == 'y' || $ans == 'Y' ]]; then
             uninstall_bot
+            return
         else
             return
         fi
