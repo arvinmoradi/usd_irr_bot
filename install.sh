@@ -180,14 +180,19 @@ set_cronjob() {
 
 uninstall_bot() {
     if check_status; then
-        echo "🗑 ${BLUE}Uninstalling bot...${NC}"
-        sudo systemctl stop $SERVICE_NAME
-        sudo systemctl disable $SERVICE_NAME
-        sudo rm -f /etc/systemd/system/$SERVICE_NAME
-        sudo systemctl daemon-reload
-        rm -rf $BOT_DIR
-        crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
-        echo -e "✅ ${GREEN}Bot completely uninstalled!${NC}"
+        echo -e "🗑 ${RED}Uninstalling bot...${NC}"
+        read -p "Do you want to uninstall (y/n) ? " ans
+        if [[ "$ans" == "y" || "$ans" == 'Y' ]]; then
+            sudo systemctl stop $SERVICE_NAME
+            sudo systemctl disable $SERVICE_NAME
+            sudo rm -f /etc/systemd/system/$SERVICE_NAME
+            sudo systemctl daemon-reload
+            rm -rf $BOT_DIR
+            crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
+            echo -e "✅ ${GREEN}Bot completely uninstalled!${NC}"
+        else
+            return
+        fi
     else
         echo -e "❌ ${RED}Nothing to uninstall${NC}"
     fi
