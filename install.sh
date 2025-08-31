@@ -8,6 +8,7 @@ REPO_DIR="https://github.com/arvinmoradi/usd_irr_bot.git"
 TEMP_DIR="${BOT_DIR}_temp"
 mkdir -p "$BOT_DIR"
 mkdir -p "$(dirname "$TEMP_DIR")"
+cd $BOT_DIR
 
 #------ COLORS -------
 GREEN='\e[32m'
@@ -26,7 +27,6 @@ VERSION="v0.1.0"
 
 #---------------FUNCTIONS--------------
 check_status() {
-    cd "$HOME"
     if [ -d "$BOT_DIR" ] && [ -d "$BOT_DIR/venv" ] && [ -d "$BOT_DIR/.git" ]; then
         return 0
     else
@@ -73,13 +73,13 @@ install_bot() {
     fi
 
     if [ ! -d 'venv' ]; then
-        echo "${BLUE}Create Virtual Environment...${NC}"
+        echo -e "${BLUE}Create Virtual Environment...${NC}"
         python3 -m venv venv
     fi
 
     source venv/bin/activate
 
-    echo "${BLUE}Installing dependency...${NC}"
+    echo -e "${BLUE}Installing dependency...${NC}"
     pip install --upgrade pip
     pip install -r requirements.txt
 
