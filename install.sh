@@ -18,7 +18,7 @@ PURPLE='\e[35m'
 TURQUOISE='\e[36m'
 WHITE='\e[37m'
 MAGNETA='\e[35m'
-NC='\e[30m'
+NC='\e[39m'
 
 #-------------- O.VARIABLES ----------
 SERVICE_NAME="arm_currency_bot.service"
@@ -66,7 +66,7 @@ install_bot() {
         git clone "$REPO_DIR" "$TEMP_DIR" || { echo "❌ Clone failed"; rm -rf "$TEMP_DIR"; exit 1; }
         cp -r "$TEMP_DIR"/. "$BOT_DIR"/
         rm -rf "$TEMP_DIR"
-        echo "🟢 ${BLUE}Installing...${NC}"
+        echo -e "🟢 ${BLUE}Installing...${NC}"
     fi
 
     if [ ! -d 'venv' ]; then
@@ -108,7 +108,7 @@ EOF
     sudo systemctl enable ${SERVICE_NAME}
     sudo systemctl start ${SERVICE_NAME}
 
-    echo "✅ ${GREEN}Bot installed and service created successfully!${NC}"
+    echo -e "✅ ${GREEN}Bot installed and service created successfully!${NC}"
     deactivate
     status="${GREEN}INSTALLED${NC}"
     read -p 'press key to back main menu: '
@@ -142,9 +142,9 @@ uninstall_bot() {
         sudo systemctl daemon-reload
         rm -rf $BOT_DIR
         crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
-        echo "✅ ${GREEN}Bot completely uninstalled!${NC}"
+        echo -e "✅ ${GREEN}Bot completely uninstalled!${NC}"
     else
-        echo "❌ ${RED}Nothing to uninstall${NC}"
+        echo -e "❌ ${RED}Nothing to uninstall${NC}"
     fi
 
     status="${RED}NOT INSTALLED${NC}"
@@ -158,7 +158,7 @@ set_cronjob() {
         if [[ $ans == "y" || $ans == "Y" ]]; then
             install_bot
         else
-            return
+            show_menu
         fi
     fi
 
@@ -193,7 +193,6 @@ set_cronjob() {
         cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
         (crontab -l 2>/dev/null; grep -v -F "$cmd"; echo "$cmd") | crontab -
         echo "✅ Cronjob Add: $cmd"
-        echo
         read -p "press key to back main menu..."
     done
 }
