@@ -82,6 +82,7 @@ install_bot() {
     WantedBy=multi-user.target
 EOF
 
+    sudo sed -i 's/^[[:space:]]*//' $SERVICE_FILE
     echo "🔹 Enabling and starting service..."
     sudo systemctl daemon-reload
     sudo systemctl enable arm_currency_bot.service
