@@ -54,8 +54,6 @@ show_menu() {
 install_bot() {
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
-    
-
 
     if [ -d ".git" ]; then
         echo "📦 Bot already exists, updating..."
@@ -68,6 +66,7 @@ install_bot() {
         cp -r "$TEMP_DIR"/* "$BOT_DIR"/
         rm -rf "$TEMP_DIR"
         echo "🟢 ${BLUE}Installing...${NC}"
+        cd $BOT_DIR
     fi
 
     if [ ! -d 'venv' ]; then
