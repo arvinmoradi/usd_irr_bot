@@ -138,44 +138,41 @@ set_cronjob() {
         if [[ $ans == "y" || $ans == "Y" ]]; then
             install_bot
         else
-            show_menu
+            return
         fi
     fi
 
-    while true; do
-        clear
-        echo -e "${MAGNETA}===========================${NC}"
-        echo -e "${GREEN}Add Cronjob${NC}"
-        echo -e "${MAGNETA}===========================${NC}"
-        echo -e "${YELLOW}1) 30 Min"
-        echo -e "2) 1 Hour"
-        echo -e "3) 2 Hour"
-        echo -e "4) 3 Hour"
-        echo -e "5) 6 Hour"
-        echo -e "6) 12 Hour"
-        echo -e "0) Back to main menu"
-        echo -e "${MAGNETA}===========================${NC}"
-        read -p "Choice: " opt
+    clear
+    echo -e "${MAGNETA}===========================${NC}"
+    echo -e "${GREEN}Add Cronjob${NC}"
+    echo -e "${MAGNETA}===========================${NC}"
+    echo -e "${YELLOW}1) 30 Min"
+    echo -e "2) 1 Hour"
+    echo -e "3) 2 Hour"
+    echo -e "4) 3 Hour"
+    echo -e "5) 6 Hour"
+    echo -e "6) 12 Hour"
+    echo -e "0) Back to main menu"
+    echo -e "${MAGNETA}===========================${NC}"
+    read -p "Choice: " opt
 
-        crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
+    crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
 
-        case $opt in
-            1) schedule="*/30 * * * *" ;;
-            2) schedule="0 */1 * * *" ;;
-            3) schedule="0 */2 * * *" ;;
-            4) schedule="0 */3 * * *" ;;
-            5) schedule="0 */6 * * *" ;;
-            6) schedule="0 */12 * * *" ;;
-            0) break ;; #main menu
-            *) echo "Invalid Choice..."; sleep 2; continue ;;
-        esac
+    case $opt in
+        1) schedule="*/30 * * * *" ;;
+        2) schedule="0 */1 * * *" ;;
+        3) schedule="0 */2 * * *" ;;
+        4) schedule="0 */3 * * *" ;;
+        5) schedule="0 */6 * * *" ;;
+        6) schedule="0 */12 * * *" ;;
+        0) return ;; #main menu
+        *) echo "Invalid Choice..."; sleep 2; continue ;;
+    esac
 
-        cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
-        (crontab -l 2>/dev/null; grep -v -F "$cmd"; echo "$cmd") | crontab -
-        echo "✅ Cronjob Add: $cmd"
-        read -p "press key to back main menu..."
-        break
-    done
+    cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
+    (crontab -l 2>/dev/null; grep -v -F "$cmd"; echo "$cmd") | crontab -
+    echo "✅ Cronjob Add: $cmd"
+    read -p "press key to back main menu..."
 }
 
 uninstall_bot() {
