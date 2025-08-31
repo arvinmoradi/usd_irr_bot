@@ -64,6 +64,7 @@ install_bot() {
         echo -e "🟢 ${BLUE}Installing...${NC}"
         echo -e "${BLUE}Create Virtual Environment...${NC}"
         python3 -m venv venv
+        echo -e "${BLUE}Virtual Environment Created...${NC}"
     fi
 
     source venv/bin/activate
