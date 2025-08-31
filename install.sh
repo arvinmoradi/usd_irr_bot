@@ -67,7 +67,6 @@ install_bot() {
         cp -r "$TEMP_DIR"/. "$BOT_DIR"/
         rm -rf "$TEMP_DIR"
         echo "🟢 ${BLUE}Installing...${NC}"
-        cd $BOT_DIR
     fi
 
     if [ ! -d 'venv' ]; then
