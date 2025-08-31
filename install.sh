@@ -68,6 +68,7 @@ install_bot() {
         git clone "$REPO_DIR" "$TEMP_DIR" || { echo "❌ Clone failed"; rm -rf "$TEMP_DIR"; exit 1; }
         cp -r "$TEMP_DIR"/* "$BOT_DIR"/ || { echo "❌ Copy failed"; rm -rf "$TEMP_DIR"; exit 1; }
         rm -rf "$TEMP_DIR"
+        cd $BOT_DIR
         echo -e "🟢 ${BLUE}Installing...${NC}"
     fi
 
