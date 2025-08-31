@@ -3,7 +3,7 @@
 set -e
 
 #-------------- DIR ----------
-BOT_DIR=$HOME/mybot
+BOT_DIR=$HOME/usd_irr_arm
 REPO_DIR="https://github.com/arvinmoradi/usd_irr_bot.git"
 mkdir -p $BOT_DIR
 
@@ -35,7 +35,7 @@ show_menu() {
 }
 
 install_bot() {
-    echo "🚀 Installing bot..."
+    echo -e "🚀 ${RED}Installing bot...${NC}"
     cd $BOT_DIR
 
     echo 'Updating...'
@@ -45,7 +45,8 @@ install_bot() {
     if [ ! -d '.git' ]; then
         git clone $REPO_DIR .
     else
-        git pull origin main
+        echo "✅ Bot is Installed"
+        return
     fi
 
     if [ ! -d 'venv' ]; then
@@ -58,8 +59,35 @@ install_bot() {
     echo 'Installing dependency...'
     pip install --upgrade pip
     pip install -r requirements.txt
-    
-    echo '✅ Install Successfuly'
+
+    echo "⚙️ Creating systemd service..."
+    SERVICE_FILE="/etc/systemd/system/arm_currency_bot.service"
+    cat <<EOF | $SERVICE_FILE > /dev/null
+    [Unit]
+    Description=Telegram Currency Bot
+    After=network.target
+
+    [Service]
+    User=root
+    WorkingDirectory=$BOT_DIR
+    ExecStart=$BOT_DIR/venv/bin/python3 $BOT_DIR/main.py
+    Restart=always
+    RestartSec=10
+    Environment=API_TOKEN=$API_TOKEN
+    Environment=NOBITEX_TOKEN=$NOBITEX_TOKEN
+    Environment=CHANNEL_ID=$CHANNEL_ID
+    Environment=CHANNEL_ID_2=$CHANNEL_ID_2
+
+    [Install]
+    WantedBy=multi-user.target
+EOF
+
+    echo "🔹 Enabling and starting service..."
+    sudo systemctl daemon-reload
+    sudo systemctl enable arm_currency_bot.service
+    sudo systemctl start arm_currency_bot.service
+
+    echo "✅ Bot installed and service created successfully!"
     deactivate
     read -p 'press key to back main menu: '
 }
