@@ -174,6 +174,7 @@ set_cronjob() {
         (crontab -l 2>/dev/null; grep -v -F "$cmd"; echo "$cmd") | crontab -
         echo "✅ Cronjob Add: $cmd"
         read -p "press key to back main menu..."
+        break
     done
 }
 
