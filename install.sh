@@ -26,6 +26,7 @@ VERSION="v0.1.0"
 
 #---------------FUNCTIONS--------------
 check_status() {
+    cd "$HOME"
     if [ -d "$BOT_DIR" ] && [ -d "$BOT_DIR/venv" ] && [ -d "$BOT_DIR/.git" ]; then
         return 0
     else
@@ -52,6 +53,7 @@ show_menu() {
 }
 
 install_bot() {
+    cd "$HOME"
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
     cd $BOT_DIR
@@ -63,8 +65,9 @@ install_bot() {
         git pull origin main
     else
         echo "📦 Cloning bot into a temporary folder..."
+        rm -rf "$TEMP_DIR"
         git clone "$REPO_DIR" "$TEMP_DIR" || { echo "❌ Clone failed"; rm -rf "$TEMP_DIR"; exit 1; }
-        cp -r "$TEMP_DIR"/. "$BOT_DIR"/
+        cp -r "$TEMP_DIR"/* "$BOT_DIR"/ || { echo "❌ Copy failed"; rm -rf "$TEMP_DIR"; exit 1; }
         rm -rf "$TEMP_DIR"
         echo -e "🟢 ${BLUE}Installing...${NC}"
     fi
@@ -80,7 +83,7 @@ install_bot() {
     pip install --upgrade pip
     pip install -r requirements.txt
 
-    echo "⚙️ ${BLUE}Creating systemd service...${NC}"
+    echo -e "⚙️ ${BLUE}Creating systemd service...${NC}"
     SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}"
 sudo tee $SERVICE_FILE > /dev/null <<EOF
 [Unit]
@@ -115,6 +118,7 @@ EOF
 }
 
 update_bot() {
+    cd "$HOME"
     if check_status; then
         echo -e "🚀 ${BLUE}Installing bot...${NC}"
         cd "$BOT_DIR"
@@ -134,6 +138,7 @@ update_bot() {
 }
 
 uninstall_bot() {
+    cd "$HOME"
     if check_status; then
         echo "🗑 ${BLUE}Uninstalling bot...${NC}"
         sudo systemctl stop $SERVICE_NAME
@@ -153,6 +158,7 @@ uninstall_bot() {
 }
 
 set_cronjob() {
+    cd "$HOME"
     if ! check_status; then
         read -p "❌ Bot not installed. Do you want to install it now? (y/n): " ans
         if [[ $ans == "y" || $ans == "Y" ]]; then
