@@ -7,6 +7,7 @@ BOT_DIR="$HOME/usd_irr_arm"
 REPO_DIR="https://github.com/arvinmoradi/usd_irr_bot.git"
 TEMP_DIR="${BOT_DIR}_temp"
 mkdir -p "$BOT_DIR"
+mkdir -p "$(dirname "$TEMP_DIR")"
 
 #------ COLORS -------
 GREEN='\e[32m'
@@ -63,8 +64,6 @@ install_bot() {
         git pull origin main
     else
         echo "📦 Cloning bot into a temporary folder..."
-        rm -rf "$TEMP_DIR"
-        mkdir -p "$TEMP_DIR"
         git clone "$REPO_DIR" "$TEMP_DIR" || { echo "❌ Clone failed"; rm -rf "$TEMP_DIR"; exit 1; }
         mv "$TEMP_DIR" "$BOT_DIR"
         rm -rf "$TEMP_DIR"
