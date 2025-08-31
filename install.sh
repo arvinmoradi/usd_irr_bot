@@ -65,7 +65,7 @@ install_bot() {
     else
         echo "📦 Cloning bot into a temporary folder..."
         git clone "$REPO_DIR" "$TEMP_DIR" || { echo "❌ Clone failed"; rm -rf "$TEMP_DIR"; exit 1; }
-        mv "$TEMP_DIR" "$BOT_DIR"
+        cp -r "$TEMP_DIR"/* "$BOT_DIR"/
         rm -rf "$TEMP_DIR"
         echo "🟢 ${BLUE}Installing...${NC}"
     fi
