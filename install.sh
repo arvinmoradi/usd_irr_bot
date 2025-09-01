@@ -64,6 +64,8 @@ install_bot() {
         read -p "Do you want to overwrite the files? (y/n)" ans
         if [[ $ans != "y" || $ans != "Y" ]]; then
             return
+        fi
+    fi
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
 
