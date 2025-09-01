@@ -171,14 +171,19 @@ set_cronjob() {
         *) echo "Invalid Choice..."; sleep 2; return ;;
     esac
 
+    #random temporary file to save crontab current
     TMP_CRON=$(mktemp)
 
+    #save crontab current and remove crontab added for this bot
     (crontab -l 2>/dev/null | grep -v "sender.py") > "$TMP_CRON" || true
+    
+    #save crontab temp to temporary file
     echo "$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py" >> "$TMP_CRON"
 
-    
+    #copy temporary file to crontab file
     crontab "$TMP_CRON"
 
+    #remove temporary file
     rm "$TMP_CRON"
     
     echo "✅ Cronjob added successfully."
