@@ -169,7 +169,7 @@ set_cronjob() {
 
     cmd="$schedule "${BOT_DIR}"/venv/bin/python3 "${BOT_DIR}"/sender.py >> "${BOT_DIR}"/cron.log 2>&1"
     if [ -n "$cmd" ]; then
-        (crontab -l 2>/dev/null | grep -v "sender.py"; echo "$cmd") | crontab -
+        (crontab -l 2>/dev/null; echo "*/30 * * * * /root/usd_irr_arm/venv/bin/python3 /root/usd_irr_arm/sender.py >> /root/usd_irr_arm/cron.log 2>&1") | crontab -
         echo "✅ Cronjob Add: $cmd"
     fi
     read -p "press key to back main menu..."
