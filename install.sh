@@ -65,10 +65,10 @@ install_bot() {
         press_key
         return
     fi
-    sudo apt update -y >/dev/null 2>&1
     echo -e "${BLUE}Updating Packages...${NC}"
-    sudo apt install -y python3 python3-venv python3-pip git >/dev/null 2>&1
+    sudo apt update -y >/dev/null 2>&1
     echo -e "${BLUE}Installing Packages...${NC}"
+    sudo apt install -y python3 python3-venv python3-pip git >/dev/null 2>&1
 
     mkdir -p "$BOT_DIR"
     cd "$BOT_DIR"
@@ -85,6 +85,13 @@ install_bot() {
     pip install --upgrade pip >/dev/null
     echo -e "${BLUE}Installing Requirements...${NC}" 
     pip install -r requirements.txt >/dev/null
+    
+    if [ -f "$BOT_DIR/.env.example" ] && [ ! -f "$BOT_DIR/.env" ]; then
+        cp "$BOT_DIR/.env.example" "$BOT_DIR/.env"
+        echo "✅ .env created"
+    else
+        echo "⚠️ Skipping .env creation (already exists or .env.example missing)"
+    fi
 
     echo -e "⚙️ ${BLUE}Creating systemd service...${NC}"
     SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}"
@@ -110,13 +117,6 @@ EOF
     sudo systemctl daemon-reload
     sudo systemctl enable ${SERVICE_NAME}
     sudo systemctl start ${SERVICE_NAME}
-
-    if [ -f "$BOT_DIR/.env.example" ] && [ ! -f "$BOT_DIR/.env" ]; then
-        cp "$BOT_DIR/.env.example" "$BOT_DIR/.env"
-        echo "✅ .env created"
-    else
-        echo "⚠️ Skipping .env creation (already exists or .env.example missing)"
-    fi
     
     echo -e "✅ ${GREEN}Bot installed and service created successfully!${NC}"
     deactivate
