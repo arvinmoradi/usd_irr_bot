@@ -62,6 +62,7 @@ install_bot() {
     if check_status; then
         echo -e "${GREEN}The robot is installed on the ${BOT_DIR}.${NC}"
         press_key
+        return
     fi
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
