@@ -172,10 +172,11 @@ set_cronjob() {
     esac
 
     TMP_CRON=$(mktemp)
-    echo "$TMP_CRON"
     crontab -l 2>/dev/null | grep -v "sender.py" > "$TMP_CRON"
     echo "$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py" >> "$TMP_CRON"
+    set +e
     crontab "$TMP_CRON"
+    set -e
     rm "$TMP_CRON"
     echo "✅ Cronjob added successfully."
     press_key
