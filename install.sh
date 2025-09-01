@@ -173,7 +173,7 @@ set_cronjob() {
 
     TMP_CRON=$(mktemp)
     echo "$TMP_CRON"
-    (crontab -l 2>/dev/null | grep -v "sender.py") > "$TMP_CRON"
+    crontab -l 2>/dev/null | grep -v "sender.py" > "$TMP_CRON"
     echo "$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py" >> "$TMP_CRON"
     crontab "$TMP_CRON"
     #rm "$TMP_CRON"
