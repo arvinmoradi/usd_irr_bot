@@ -172,13 +172,23 @@ set_cronjob() {
     esac
 
     TMP_CRON=$(mktemp)
+
     crontab -l 2>/dev/null | grep -v "sender.py" > "$TMP_CRON"
     echo "$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py" >> "$TMP_CRON"
+    
     set +e
     crontab "$TMP_CRON"
+    CRON_EXIT=$?
     set -e
+
     rm "$TMP_CRON"
-    echo "✅ Cronjob added successfully."
+
+    if [ $CRON_EXIT -ne 0 ]; then
+        echo "❌ Failed to update crontab (exit code: $CRON_EXIT)"
+    else
+        echo "✅ Cronjob added successfully."
+    fi
+    
     press_key
 }
 
