@@ -168,10 +168,16 @@ set_cronjob() {
     esac
 
     cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
-    if [ -n "$cmd" ]; then
+    echo "🔍 Adding cronjob: $cmd"
+
+    # استفاده از sudo در صورت نیاز
+    if [ "$EUID" -ne 0 ]; then
         (crontab -l 2>/dev/null | grep -v "sender.py"; echo "$cmd") | crontab -
-        echo "✅ Cronjob Add: $cmd"
+    else
+        (crontab -l 2>/dev/null | grep -v "sender.py"; echo "$cmd") | crontab -
     fi
+
+    echo "✅ Cronjob added (check with 'crontab -l' or 'sudo crontab -l')"
     read -p "press key to back main menu..."
 }
 
