@@ -59,6 +59,11 @@ show_menu() {
 }
 
 install_bot() {
+    if check_status; then
+        echo -e "${GREEN}The robot is installed on the ${BOT_DIR}.${NC}"
+        read -p "Do you want to overwrite the files? (y/n)" ans
+        if [[ $ans != "y" || $ans != "Y" ]]; then
+            return
     sudo apt update -y
     sudo apt install -y python3 python3-venv python3-pip git
 
