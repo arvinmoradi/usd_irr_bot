@@ -64,23 +64,19 @@ install_bot() {
         press_key
         return
     fi
-    sudo apt update -y
-    sudo apt install -y python3 python3-venv python3-pip git
+    sudo apt update -y >/dev/null 2>&1
+    echo "${BLUE}Updating Packages...${NC}"
+    sudo apt install -y python3 python3-venv python3-pip git >/dev/null 2>&1
+    echo "${BLUE}Installing Packages...${NC}"
 
     mkdir -p "$BOT_DIR"
     cd "$BOT_DIR"
 
-    if [ -d "venv" ]; then
-        echo "❌ Directory $BOT_DIR already exists and is not empty"
-        uninstall_bot
-        return
-    else
-        git clone "$REPO_DIR" "$BOT_DIR" || { echo "❌ Clone failed"; exit 1; }
-        echo -e "🟢 ${BLUE}Installing...${NC}"
-        echo -e "${BLUE}Create Virtual Environment...${NC}"
-        python3 -m venv venv
-        echo -e "${BLUE}Virtual Environment Created...${NC}"
-    fi
+    git clone "$REPO_DIR" "$BOT_DIR" || { echo "❌ Clone failed"; exit 1; }
+    echo -e "🟢 ${BLUE}Installing...${NC}"
+    echo -e "${BLUE}Create Virtual Environment...${NC}"
+    python3 -m venv venv
+    echo -e "${BLUE}Virtual Environment Created...${NC}"
 
     source venv/bin/activate
 
