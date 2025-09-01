@@ -214,7 +214,7 @@ set_cronjob() {
     #remove temporary file
     rm "$TMP_CRON"
     
-    sudo "$cmd"
+    sudo "$BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py"
     echo "✅ Cronjob added successfully."
     press_key
 }
