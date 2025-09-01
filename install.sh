@@ -168,7 +168,7 @@ set_cronjob() {
         5) schedule="0 */6 * * *" ;;
         6) schedule="0 */12 * * *" ;;
         0) return ;; #main menu
-        *) echo "Invalid Choice..."; sleep 2 ;;
+        *) echo "Invalid Choice..."; sleep 2; return ;;
     esac
 
     TMP_CRON=$(mktemp)
@@ -177,6 +177,7 @@ set_cronjob() {
     echo "$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py" >> "$TMP_CRON"
     crontab "$TMP_CRON"
     #rm "$TMP_CRON"
+    echo "✅ Cronjob added successfully."
     press_key
 }
 
