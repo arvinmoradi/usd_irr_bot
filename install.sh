@@ -65,9 +65,9 @@ install_bot() {
         return
     fi
     sudo apt update -y >/dev/null 2>&1
-    echo "${BLUE}Updating Packages...${NC}"
+    echo -e "${BLUE}Updating Packages...${NC}"
     sudo apt install -y python3 python3-venv python3-pip git >/dev/null 2>&1
-    echo "${BLUE}Installing Packages...${NC}"
+    echo -e "${BLUE}Installing Packages...${NC}"
 
     mkdir -p "$BOT_DIR"
     cd "$BOT_DIR"
@@ -185,9 +185,11 @@ set_cronjob() {
 
     #save crontab current and remove crontab added for this bot
     (crontab -l 2>/dev/null | grep -v "sender.py") > "$TMP_CRON" || true
+
+    cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py"
     
     #save crontab temp to temporary file
-    echo "$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py" >> "$TMP_CRON"
+    echo  "$cmd" >> "$TMP_CRON"
 
     #copy temporary file to crontab file
     crontab "$TMP_CRON"
@@ -195,6 +197,7 @@ set_cronjob() {
     #remove temporary file
     rm "$TMP_CRON"
     
+    sudo "$cmd"
     echo "✅ Cronjob added successfully."
     press_key
 }
