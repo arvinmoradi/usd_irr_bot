@@ -22,6 +22,10 @@ SERVICE_NAME="arm_currency_bot.service"
 VERSION="v0.1.0"
 
 #---------------FUNCTIONS--------------
+press_key() {
+    read -p "press key to back main menu..."
+}
+
 check_status() {
     if [ -d "$BOT_DIR" ] && [ -d "$BOT_DIR/.git" ]; then
         return 0
@@ -110,7 +114,7 @@ EOF
     echo -e "✅ ${GREEN}Bot installed and service created successfully!${NC}"
     deactivate
     status="${GREEN}INSTALLED${NC}"
-    read -p 'press key to back main menu: '
+    press_key
 }
 
 update_bot() {
@@ -129,7 +133,7 @@ update_bot() {
             install_bot
         fi
     fi
-    read -p 'press key to back main menu: '
+    press_key
 }
 
 set_cronjob() {
@@ -167,10 +171,12 @@ set_cronjob() {
         *) echo "Invalid Choice..."; sleep 2 ;;
     esac
 
-    cmd="${schedule} $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
-    (crontab -l 2>/dev/null | grep -v -F "sender.py"; echo "$cmd") | crontab -
+    crontab -l > /tmp/crontab.tmp
+    echo "$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1" >> /tmp/crontab.tmp
+    crontab /tmp/crontab.tmp
+    rm /tmp/crontab.tmp
     echo "✅ Cronjob Add: $cmd"
-    read -p "press key to back main menu..."
+    press_key
 }
 
 uninstall_bot() {
@@ -196,7 +202,7 @@ uninstall_bot() {
 
     status="${RED}NOT INSTALLED${NC}"
 
-    read -p 'press key to back main menu: '
+    press_key
 }
 
 #-----------RUN-------------
