@@ -51,9 +51,10 @@ show_menu() {
     echo -e "${MAGNETA}===========================${NC}"
     echo -e "${YELLOW}1) Install"
     echo -e "2) Update"
-    echo -e "3) Set Cronjob"
-    echo -e "4) Uninstall"
-    echo -e "5) Exit"
+    echo -e "3) Restart"
+    echo -e "4) Set Cronjob"
+    echo -e "5) Uninstall"
+    echo -e "0) Exit"
     echo -e "${MAGNETA}===========================${NC}"
     read -p "Choose: " choice
 }
@@ -141,6 +142,23 @@ update_bot() {
         fi
     fi
     press_key
+}
+
+restart_bot() {
+    if check_status; then
+        echo -e "🔄️ ${BLUE}Restarting bot...${NC}"
+        sudo systemctl daemon-reload
+        sudo systemctl restart $SERVICE_NAME
+        echo -e "✅ ${GREEN}Restart is Done${NC}"
+        press_key
+    else
+        read -p "❌ Bot not installed. Do you want to install it now? (y/n): " ans
+        if [[ $ans == "y" || $ans == "Y" ]]; then
+            install_bot
+        else
+            return
+        fi
+    fi
 }
 
 set_cronjob() {
@@ -233,9 +251,10 @@ while true; do
     case $choice in
         1) install_bot ;;
         2) update_bot ;;
-        3) set_cronjob ;;
-        4) uninstall_bot ;;
-        5) echo "Exit..."; exit 0 ;;
+        3) restart_bot ;;
+        4) set_cronjob ;;
+        5) uninstall_bot ;;
+        0) echo "Exit..."; exit 0 ;;
         *) echo "Invalid Choice"; sleep 2 ;;
     esac
 done
