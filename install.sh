@@ -171,11 +171,10 @@ set_cronjob() {
         *) echo "Invalid Choice..."; sleep 2 ;;
     esac
 
-    (crontab -l 2>/dev/null | grep -v "sender.py") | crontab - > /tmp/crontab.tmp
-    echo "$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1" >> /tmp/crontab.tmp
+    (crontab -l 2>/dev/null | grep -v "sender.py") > /tmp/crontab.tmp
+    echo "$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py" >> /tmp/crontab.tmp
     crontab /tmp/crontab.tmp
     #rm /tmp/crontab.tmp
-    echo "✅ Cronjob Add: $cmd"
     press_key
 }
 
