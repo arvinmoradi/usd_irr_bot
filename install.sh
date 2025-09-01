@@ -82,8 +82,9 @@ install_bot() {
     source venv/bin/activate
 
     echo -e "${BLUE}Installing dependency...${NC}"
-    pip install --upgrade pip
-    pip install -r requirements.txt
+    pip install --upgrade pip >/dev/null
+    echo -e "${BLUE}Installing Requirements...${NC}" 
+    pip install -r requirements.txt >/dev/null
 
     echo -e "⚙️ ${BLUE}Creating systemd service...${NC}"
     SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}"
