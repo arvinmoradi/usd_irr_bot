@@ -167,7 +167,7 @@ set_cronjob() {
         *) echo "Invalid Choice..."; sleep 2 ;;
     esac
 
-    cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
+    cmd="${schedule} $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
     (crontab -l 2>/dev/null | grep -v -F "sender.py"; echo "$cmd") | crontab -
     echo "✅ Cronjob Add: $cmd"
     read -p "press key to back main menu..."
