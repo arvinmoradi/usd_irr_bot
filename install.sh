@@ -167,17 +167,11 @@ set_cronjob() {
         *) echo "Invalid Choice..."; sleep 2 ;;
     esac
 
-    cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
-    echo "🔍 Adding cronjob: $cmd"
-
-    # استفاده از sudo در صورت نیاز
-    if [ "$EUID" -ne 0 ]; then
+    cmd="$schedule "${BOT_DIR}"/venv/bin/python3 "${BOT_DIR}"/sender.py >> "${BOT_DIR}"/cron.log 2>&1"
+    if [ -n "$cmd" ]; then
         (crontab -l 2>/dev/null | grep -v "sender.py"; echo "$cmd") | crontab -
-    else
-        (crontab -l 2>/dev/null | grep -v "sender.py"; echo "$cmd") | crontab -
+        echo "✅ Cronjob Add: $cmd"
     fi
-
-    echo "✅ Cronjob added (check with 'crontab -l' or 'sudo crontab -l')"
     read -p "press key to back main menu..."
 }
 
