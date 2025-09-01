@@ -199,6 +199,7 @@ uninstall_bot() {
             rm -rf $BOT_DIR
             crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
             echo -e "✅ ${GREEN}Bot completely uninstalled!${NC}"
+            cd $HOME
         else
             return
         fi
