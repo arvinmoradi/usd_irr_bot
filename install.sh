@@ -50,7 +50,7 @@ show_menu() {
     echo -e "3) Set Cronjob"
     echo -e "4) Uninstall"
     echo -e "5) Exit"
-    echo -e "${MAGNETA}==============a=============${NC}"
+    echo -e "${MAGNETA}===========================${NC}"
     read -p "Choose: " choice
 }
 
@@ -169,7 +169,7 @@ set_cronjob() {
 
     cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
     if [ -n "$cmd" ]; then
-        (crontab -l 2>/dev/null | grep -v -F "$cmd"; echo "$cmd") | crontab -
+        (crontab -l 2>/dev/null | grep -v "sender.py"; echo "$cmd") | crontab -
         echo "✅ Cronjob Add: $cmd"
     fi
     read -p "press key to back main menu..."
