@@ -6,6 +6,22 @@ set -e
 BOT_DIR="$HOME/usd_irr_arm"
 REPO_DIR="https://github.com/arvinmoradi/usd_irr_bot.git"
 
+#-------------- ENV ----------
+create_env_file() {
+cat > "$BOT_DIR/.env.example" <<EOF
+API_TOKEN=
+
+#---optional---
+NOBITEX_TOKEN=
+#---
+
+CHANNEL_ID=
+CHANNEL_ID_2=
+EOF
+}
+
+create_env_file
+
 #------ COLORS -------
 GREEN='\e[32m'
 RED='\e[31m'
@@ -111,8 +127,16 @@ EOF
     sudo systemctl enable ${SERVICE_NAME}
     sudo systemctl start ${SERVICE_NAME}
 
+    if [ -f "$BOT_DIR/.env.example" ] && [ ! -f "$BOT_DIR/.env" ]; then
+        cp "$BOT_DIR/.env.example" "$BOT_DIR/.env"
+        echo "✅ .env created"
+    else
+        echo "⚠️ Skipping .env creation (already exists or .env.example missing)"
+    fi
+    
     echo -e "✅ ${GREEN}Bot installed and service created successfully!${NC}"
     deactivate
+
     status="${GREEN}INSTALLED${NC}"
     press_key
 }
