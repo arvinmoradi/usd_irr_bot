@@ -81,9 +81,8 @@ install_bot() {
 
     source venv/bin/activate
 
-    echo -e "${BLUE}Installing dependency...${NC}"
-    pip install --upgrade pip >/dev/null
     echo -e "${BLUE}Installing Requirements...${NC}" 
+    pip install --upgrade pip >/dev/null
     pip install -r requirements.txt >/dev/null
 
     if [ -f "$BOT_DIR/.env.example" ] && [ ! -f "$BOT_DIR/.env" ]; then
@@ -122,6 +121,8 @@ EOF
     deactivate
 
     status="${GREEN}INSTALLED${NC}"
+    echo -e "Before doing anything else, you must first edit the .env file"
+    echo -e "${PURPLE}nano ~/usd_irr_arm/.env${NC}"
     press_key
 }
 
@@ -214,7 +215,7 @@ set_cronjob() {
     #remove temporary file
     rm "$TMP_CRON"
     
-    sudo "$BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py"
+    sudo $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py
     echo "✅ Cronjob added successfully."
     press_key
 }
@@ -231,6 +232,7 @@ uninstall_bot() {
                 sudo systemctl daemon-reload
             fi
             rm -rf $BOT_DIR
+            echo -e "✅ ${GREEN}Directory is Remove${NC}"
             crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
             echo -e "✅ ${GREEN}Bot completely uninstalled!${NC}"
             cd $HOME
