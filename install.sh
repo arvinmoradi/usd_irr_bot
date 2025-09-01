@@ -50,7 +50,7 @@ show_menu() {
     echo -e "3) Set Cronjob"
     echo -e "4) Uninstall"
     echo -e "5) Exit"
-    echo -e "${MAGNETA}===========================${NC}"
+    echo -e "${MAGNETA}==============a=============${NC}"
     read -p "Choose: " choice
 }
 
