@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+#set -e
 
 #-------------- DIR ----------
 BOT_DIR="$HOME/usd_irr_arm"
