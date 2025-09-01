@@ -66,14 +66,14 @@ install_bot() {
         return
     fi
     echo -e "${BLUE}Updating Packages...${NC}"
-    sudo apt update -y >/dev/null
+    sudo apt-get update -y >/dev/null
     echo -e "${BLUE}Installing Packages...${NC}"
-    sudo apt install -y python3 python3-venv python3-pip git >/dev/null
+    sudo apt-get install -y python3 python3-venv python3-pip git >/dev/null
 
     mkdir -p "$BOT_DIR"
     cd "$BOT_DIR"
 
-    git clone "$REPO_DIR" "$BOT_DIR" || { echo "❌ Clone failed"; exit 1; } >/dev/null
+    git clone "$REPO_DIR" "$BOT_DIR" >/dev/null || { echo "❌ Clone failed"; exit 1; }
     echo -e "🟢 ${BLUE}Installing...${NC}"
     echo -e "${BLUE}Create Virtual Environment...${NC}"
     python3 -m venv venv
