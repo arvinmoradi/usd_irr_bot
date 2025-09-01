@@ -6,22 +6,6 @@ set -e
 BOT_DIR="$HOME/usd_irr_arm"
 REPO_DIR="https://github.com/arvinmoradi/usd_irr_bot.git"
 
-#-------------- ENV ----------
-create_env_file() {
-cat > "$BOT_DIR/.env.example" <<EOF
-API_TOKEN=
-
-#---optional---
-NOBITEX_TOKEN=
-#---
-
-CHANNEL_ID=
-CHANNEL_ID_2=
-EOF
-}
-
-create_env_file
-
 #------ COLORS -------
 GREEN='\e[32m'
 RED='\e[31m'
