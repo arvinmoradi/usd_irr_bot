@@ -97,10 +97,7 @@ WorkingDirectory=$BOT_DIR
 ExecStart=$BOT_DIR/venv/bin/python3 $BOT_DIR/main.py
 Restart=always
 RestartSec=10
-Environment=API_TOKEN=$API_TOKEN
-Environment=NOBITEX_TOKEN=$NOBITEX_TOKEN
-Environment=CHANNEL_ID=$CHANNEL_ID
-Environment=CHANNEL_ID_2=$CHANNEL_ID_2
+EnvironmentFile=/root/usd_irr_arm/.env
 
 [Install]
 WantedBy=multi-user.target
@@ -134,8 +131,9 @@ update_bot() {
         git pull origin main
         pip install --upgrade -r requirements.txt >/dev/null 2>&1
         deactivate
+        sudo systemctl daemon-reload
         sudo systemctl restart $SERVICE_NAME
-        echo "✅ Update completed!"
+        echo -e "✅ ${GREEN}Update completed!${NC}"
     else
         read -p "❌ Bot not installed. Do you want to install it now? (y/n): " ans
         if [[ "$ans" == "y" || "$ans" == 'Y' ]]; then
