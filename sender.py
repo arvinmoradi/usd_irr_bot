@@ -1,7 +1,7 @@
 import os
+import telebot
 from dotenv import load_dotenv
 from main import price_currency, price_gold, price_crypto, date_time
-import telebot
 
 load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
