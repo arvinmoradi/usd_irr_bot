@@ -22,6 +22,10 @@ SERVICE_NAME="arm_currency_bot.service"
 VERSION="v0.1.0"
 
 #---------------FUNCTIONS--------------
+press_key() {
+    read -p "press key to back main menu..."
+}
+
 check_status() {
     if [ -d "$BOT_DIR" ] && [ -d "$BOT_DIR/.git" ]; then
         return 0
@@ -110,16 +114,16 @@ EOF
     echo -e "✅ ${GREEN}Bot installed and service created successfully!${NC}"
     deactivate
     status="${GREEN}INSTALLED${NC}"
-    read -p 'press key to back main menu: '
+    press_key
 }
 
 update_bot() {
     if check_status; then
         echo -e "🚀 ${BLUE}Updating bot...${NC}"
         cd "$BOT_DIR"
-        source venv/bin/activate
+        source venv/bin/activate >/dev/null 2>&1
         git pull origin main
-        pip install --upgrade -r requirements.txt
+        pip install --upgrade -r requirements.txt >/dev/null 2>&1
         deactivate
         sudo systemctl restart $SERVICE_NAME
         echo "✅ Update completed!"
@@ -129,7 +133,7 @@ update_bot() {
             install_bot
         fi
     fi
-    read -p 'press key to back main menu: '
+    press_key
 }
 
 set_cronjob() {
@@ -164,15 +168,21 @@ set_cronjob() {
         5) schedule="0 */6 * * *" ;;
         6) schedule="0 */12 * * *" ;;
         0) return ;; #main menu
-        *) echo "Invalid Choice..."; sleep 2 ;;
+        *) echo "Invalid Choice..."; sleep 2; return ;;
     esac
 
-    cmd="$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py >> $BOT_DIR/cron.log 2>&1"
-    if [ -n "$cmd" ]; then
-        (crontab -l 2>/dev/null; grep -v -F "$cmd"; echo "$cmd") | crontab -
-    fi
-    echo "✅ Cronjob Add: $cmd"
-    read -p "press key to back main menu..."
+    TMP_CRON=$(mktemp)
+
+    (crontab -l 2>/dev/null | grep -v "sender.py") > "$TMP_CRON" || true
+    echo "$schedule $BOT_DIR/venv/bin/python3 $BOT_DIR/sender.py" >> "$TMP_CRON"
+
+    
+    crontab "$TMP_CRON"
+
+    rm "$TMP_CRON"
+    
+    echo "✅ Cronjob added successfully."
+    press_key
 }
 
 uninstall_bot() {
@@ -189,6 +199,7 @@ uninstall_bot() {
             rm -rf $BOT_DIR
             crontab -l 2>/dev/null | grep -v "sender.py" | crontab -
             echo -e "✅ ${GREEN}Bot completely uninstalled!${NC}"
+            cd $HOME
         else
             return
         fi
@@ -198,7 +209,7 @@ uninstall_bot() {
 
     status="${RED}NOT INSTALLED${NC}"
 
-    read -p 'press key to back main menu: '
+    press_key
 }
 
 #-----------RUN-------------
