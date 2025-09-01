@@ -117,9 +117,9 @@ update_bot() {
     if check_status; then
         echo -e "🚀 ${BLUE}Updating bot...${NC}"
         cd "$BOT_DIR"
-        source venv/bin/activate 2>/dev/null
+        source venv/bin/activate >/dev/null 2>&1
         git pull origin main
-        pip install --upgrade -r requirements.txt 2>/dev/null
+        pip install --upgrade -r requirements.txt >/dev/null 2>&1
         deactivate
         sudo systemctl restart $SERVICE_NAME
         echo "✅ Update completed!"
